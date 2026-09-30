@@ -14,7 +14,9 @@
   "files": [
     "dist",
     "docs/fixtures/offline.expected.txt",
+    "docs/DEMO.md",
     "SECURITY.md",
+    "CHANGELOG.md",
     "CHARTER.md",
     "LICENSE",
     "README.md"

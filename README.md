@@ -8,9 +8,15 @@ Client **idempotency key** → remember payload hash / prior deny; **conflict** 
 
 > **Charter:** [CHARTER.md](./CHARTER.md) — no Soft\* · no Polar/checkout · no custody · not published to npm
 
+## Quick-start
+
 ```bash
-npm install && npm test && npm run demo:offline
+npm install
+npm test
+npm run demo:offline
 ```
+
+Offline allow / deny / conflict story: [`docs/DEMO.md`](./docs/DEMO.md).
 
 ## Honesty (locked)
 
@@ -22,11 +28,57 @@ P0 has no key TTL. Expiry that forgets a key can turn a retry into a second broa
 
 When requireKey is false and the client omits a key, this gate does not deduplicate. Agent submit paths that need retry safety must set requireKey true and send a key.
 
-## Compose contract (DC4 shape B)
+## Compose drop-in (DC4 shape B)
+
+This package is the **idempotency key gate only**. It does not simulate, allowlist destinations, or bound approvals.
+
+Typical send-rail order (siblings **mention only** — not redesigned here):
+
+```
+send-allow → send-approve-bound → send-permit2-bound → send-idempotency → (L2 Send Guard / eth_sendRawTransaction)
+```
+
+- **send-allow** — destination / native value gate
+- **L2 Send Guard** — sim-before-send (separate package)
+- **This package** — client key → hash / deny / conflict; use `shouldForward` before any second broadcast
 
 `decision` is a required discriminant. Export `shouldForward(result)` — true **only** for `proceed_first`. Do not forward on `allow` alone.
 
 Lifecycle: first-see writes `in_flight` and returns `proceed_first`; call `completeIdempotency` after a known terminal outcome; same key+hash while `in_flight` → `idempotency_in_flight`.
+
+### Agent submit path (`requireKey` + `shouldForward`)
+
+```ts
+import {
+  defaultIdempotencyPolicy,
+  evaluateIdempotency,
+  completeIdempotency,
+  MemoryIdempotencyStore,
+  shouldForward,
+} from "send-idempotency";
+
+// Agent paths that need retry safety: require a client key.
+const policy = { ...defaultIdempotencyPolicy(), requireKey: true };
+const store = new MemoryIdempotencyStore();
+
+async function submitAgentRaw(key: string, signedRawHex: string) {
+  const result = await evaluateIdempotency(policy, store, {
+    key,
+    payload: signedRawHex, // exact signed raw bytes (fingerprint SoT)
+  });
+
+  if (!shouldForward(result)) {
+    // replay_same → do NOT call eth_sendRawTransaction again
+    // deny → conflict / in_flight / store_down / key_required
+    return result;
+  }
+
+  // decision === proceed_first only — safe to submit once
+  await eth_sendRawTransaction(signedRawHex);
+  await completeIdempotency(store, key, { terminal: "allow" });
+  return result;
+}
+```
 
 ## Deny codes (P0)
 
