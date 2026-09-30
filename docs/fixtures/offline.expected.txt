@@ -1,0 +1,12 @@
+send-idempotency offline demo
+no keys · no capital · no public RPC · NOT nonce-lease
+
+1 first key → allow=true decision=proceed_first shouldForward=true
+2 retry same payload → allow=true decision=replay_same shouldForward=false
+3 retry mutated payload → allow=false code=idempotency_conflict
+4 store down → allow=false code=idempotency_store_down
+5 key required missing → allow=false code=idempotency_key_required
+6 in-flight retry → allow=false code=idempotency_in_flight (first was proceed_first)
+
+charter: no Soft* · no Polar · no custody · LaunchGate-before-expansion
+honesty: replay_same means do not call eth_sendRawTransaction again. Checking allow alone is not enough.

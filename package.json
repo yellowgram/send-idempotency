@@ -1,0 +1,28 @@
+{
+  "name": "send-idempotency",
+  "version": "0.1.0",
+  "description": "Non-custodial at-send idempotency: client key → remember hash/deny; conflict if payload differs; fail-closed on store-down. NOT nonce-lease.",
+  "type": "module",
+  "main": "./dist/api.js",
+  "types": "./dist/api.d.ts",
+  "exports": {
+    ".": { "types": "./dist/api.d.ts", "import": "./dist/api.js" }
+  },
+  "files": ["dist", "docs/fixtures/offline.expected.txt", "SECURITY.md", "CHARTER.md", "LICENSE", "README.md"],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "lint": "tsc --noEmit",
+    "demo:offline": "npm run build && node scripts/demo-offline.mjs"
+  },
+  "engines": { "node": ">=20" },
+  "keywords": ["ethereum", "idempotency", "middleware", "agent", "fail-closed"],
+  "license": "MIT",
+  "author": { "name": "yellowgram" },
+  "private": true,
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}
