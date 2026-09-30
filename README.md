@@ -2,11 +2,11 @@
 
 More from yellowgram: [OSS tools](https://www.yellowgram.dev/oss).
 
-**Status:** public MIT source · not on npm yet · no Polar
+**Status:** public MIT · npm `send-idempotency@0.1.0` · no Polar
 
 Client **idempotency key** → remember payload hash / prior deny; **conflict** if payload differs; **fail-closed** when the store is down. **NOT** nonce-lease (parked).
 
-> **Charter:** [CHARTER.md](./CHARTER.md) — no Soft\* · no Polar/checkout · no custody · not published to npm
+> **Charter:** [CHARTER.md](./CHARTER.md) — no Soft\* · no Polar/checkout · no custody
 
 ## Quick-start
 

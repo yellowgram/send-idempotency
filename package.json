@@ -42,7 +42,6 @@
     "name": "yellowgram",
     "url": "https://www.yellowgram.dev"
   },
-  "private": true,
   "devDependencies": {
     "@types/node": "^20.14.0",
     "typescript": "^5.5.0",
