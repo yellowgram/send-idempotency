@@ -1,9 +1,9 @@
 # send-idempotency — charter fences
 
-**Status:** LOCAL_SCAFFOLD · private · LaunchGate-before-expansion  
+**Status:** public GitHub · not on npm · LaunchGate-before-expansion  
 **As of:** 2026-09-30 (ET)
 
-This package is a **narrow** agent-ops middleware slice. Keep the surface honest. No public remote / npm until founder + LaunchGate.
+This package is a **narrow** agent-ops middleware slice. Keep the surface honest. Public GitHub source is OK. No npm publish and no Polar until founder + LaunchGate.
 
 ## Job (P0)
 
@@ -29,7 +29,7 @@ Orthogonal to Guard (sim) and Allow (dest). Not a mempool hold product.
 - Atomic first-see → `in_flight`; complete → terminal; concurrent → `idempotency_in_flight`
 - Store unavailable → **fail-closed** (or explicit degrade flag — default FC)
 - offline `demo:offline` + unit tests
-- MIT, self-hosted, local-only until founder
+- MIT, self-hosted; public GitHub OK; not on npm until founder
 
 ## Out of scope / fences
 
@@ -39,7 +39,7 @@ Orthogonal to Guard (sim) and Allow (dest). Not a mempool hold product.
 | **No key custody** | No signing. |
 | **No Soft\*** | Forbidden. |
 | **No Polar / checkout URLs** | None. |
-| **No public/npm until founder** | Private local scaffold only. |
+| **No npm / Polar until founder** | Public GitHub OK. No `npm publish`, no Polar/checkout until LaunchGate + founder GO. |
 | **No Safe / custody / SaaS / mainnet SLA** | Charter out. |
 | **No distributed fleet ledger as product** | P0 is local store + interface; multi-instance fleet budget is separate / deferred. |
 | **LaunchGate-before-expansion** | Durable Redis/SQL adapters, TTL productization, fleet sync need LaunchGate. |
