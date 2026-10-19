@@ -100,3 +100,7 @@ P0 ships `MemoryIdempotencyStore` plus `IdempotencyStore`. No Redis/SQL adapters
 ## License
 
 MIT — [LICENSE](./LICENSE).
+
+---
+
+Part of yellowgram open source tools: https://www.yellowgram.dev/oss
