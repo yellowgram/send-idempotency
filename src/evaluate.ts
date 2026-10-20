@@ -7,14 +7,14 @@ import type {
   IdempotencyResult,
 } from "./types.js";
 
-/** Max idempotency key length in UTF-8 bytes (DC10). */
+/** Max idempotency key length in UTF-8 bytes. */
 export const MAX_KEY_UTF8_BYTES = 255;
 
 export interface IdempotencyInput {
   key?: string | null;
   /**
    * Exact signed raw transaction bytes as hex (with or without 0x).
-   * Fingerprint = hash of normalized lowercase hex without whitespace (DC1).
+   * Fingerprint = hash of normalized lowercase hex without whitespace.
    * Do not pass a partial JSON of to/value/data alone.
    */
   payload: string;
@@ -90,7 +90,7 @@ function fromExisting(
 
 /**
  * Client key → remember hash / prior deny; conflict if payload differs; FC on store-down.
- * First-see claims in_flight atomically; complete via completeIdempotency (DC5/DC6).
+ * First-see claims in_flight atomically; complete via completeIdempotency.
  * NOT nonce-lease.
  */
 export async function evaluateIdempotency(
@@ -118,7 +118,7 @@ export async function evaluateIdempotency(
         reason: "idempotency key required",
       };
     }
-    // Optional key omitted → no dedup (DC9). Compose may still forward.
+    // Optional key omitted → no dedup. Compose may still forward.
     return { allow: true, decision: "proceed_first" };
   }
 
@@ -158,7 +158,7 @@ export async function evaluateIdempotency(
     if (claimed) {
       return { allow: true, decision: "proceed_first", record };
     }
-    // Lost race — reload and treat as existing (DC5).
+    // Lost race — reload and treat as existing.
     try {
       existing = await store.get(key);
     } catch {
@@ -182,7 +182,7 @@ export interface CompleteIdempotencyOutcome {
 }
 
 /**
- * Mark a first-see record completed after a known terminal outcome (DC6).
+ * Mark a first-see record completed after a known terminal outcome.
  * Call after upstream accepted, or after a definite local deny post-ownership.
  * Same key+hash while still in_flight → idempotency_in_flight (fail-closed toward double-submit).
  */

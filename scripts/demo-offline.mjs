@@ -70,7 +70,7 @@ const r7 = await evaluateIdempotency(defaultIdempotencyPolicy(), store, {
 out(`6 in-flight retry → allow=${r7.allow} code=${r7.code} (first was ${r6.decision})`);
 
 out("");
-out("charter: no Soft* · no Polar · no custody · LaunchGate-before-expansion");
+out("deprecated: use l2-send-guard 1.x · this package holds no keys");
 out("honesty: replay_same means do not call eth_sendRawTransaction again. Checking allow alone is not enough.");
 
 const expected = readFileSync(EXPECTED, "utf8").replace(/\r\n/g, "\n").trimEnd();

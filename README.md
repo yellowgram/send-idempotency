@@ -1,106 +1,31 @@
-# send-idempotency
+# send-idempotency (deprecated)
 
-More from yellowgram: [OSS tools](https://www.yellowgram.dev/oss).
+**This package is merged into [`l2-send-guard`](https://github.com/yellowgram/l2-safety-proxy) 1.x and gets no more fixes.**
+Version 0.2.0 behaves exactly like 0.1.0 and prints one deprecation warning when imported.
 
-**Status:** public MIT · npm `send-idempotency@0.1.0` · no Polar
+## Why
 
-Client **idempotency key** → remember payload hash / prior deny; **conflict** if payload differs; **fail-closed** when the store is down. **NOT** nonce-lease (parked).
+send-idempotency did one slice of a bigger job (idempotency keys for sends). On its own it had gaps that a single tool closes better:
 
-> **Charter:** [CHARTER.md](./CHARTER.md) — no Soft\* · no Polar/checkout · no custody
+- Keys lived in memory only: after a restart, a retry under the same key with a different transaction was sent. That is the double payment the package existed to stop.
+- Memory grew with every key, with no TTL.
+- A key whose send timed out stayed in flight forever, with no way to find out what happened.
+- There was no proxy, so the key had no standard way to travel with a JSON-RPC send.
 
-## Quick-start
+`l2-send-guard` 1.x checks every call inside a transaction against one policy file, gates EIP-7702
+delegations, keeps rolling caps and idempotency keys in a persistent store, watches what arrives, and
+ships a guarded signer that makes the policy binding for whoever holds the key.
 
-```bash
-npm install
-npm test
-npm run demo:offline
+## Migrating
+
+```sh
+npm uninstall send-idempotency
+npm install l2-send-guard
 ```
 
-Offline allow / deny / conflict story: [`docs/DEMO.md`](./docs/DEMO.md).
-
-## Honesty (locked)
-
-The idempotency fingerprint is the hash of the exact signed raw transaction bytes. A re-signed transaction is a new payload; reuse the same key only for byte-identical retries.
-
-replay_same means do not call eth_sendRawTransaction again. Checking allow alone is not enough.
-
-P0 has no key TTL. Expiry that forgets a key can turn a retry into a second broadcast; durable TTL needs a later LaunchGate.
-
-When requireKey is false and the client omits a key, this gate does not deduplicate. Agent submit paths that need retry safety must set requireKey true and send a key.
-
-## Compose drop-in (DC4 shape B)
-
-This package is the **idempotency key gate only**. It does not simulate, allowlist destinations, or bound approvals.
-
-Typical send-rail order (siblings **mention only** — not redesigned here):
-
-```
-send-allow → send-approve-bound → send-permit2-bound → send-idempotency → (L2 Send Guard / eth_sendRawTransaction)
-```
-
-- **send-allow** — destination / native value gate
-- **L2 Send Guard** — sim-before-send (separate package)
-- **This package** — client key → hash / deny / conflict; use `shouldForward` before any second broadcast
-
-`decision` is a required discriminant. Export `shouldForward(result)` — true **only** for `proceed_first`. Do not forward on `allow` alone.
-
-Lifecycle: first-see writes `in_flight` and returns `proceed_first`; call `completeIdempotency` after a known terminal outcome; same key+hash while `in_flight` → `idempotency_in_flight`.
-
-### Agent submit path (`requireKey` + `shouldForward`)
-
-```ts
-import {
-  defaultIdempotencyPolicy,
-  evaluateIdempotency,
-  completeIdempotency,
-  MemoryIdempotencyStore,
-  shouldForward,
-} from "send-idempotency";
-
-// Agent paths that need retry safety: require a client key.
-const policy = { ...defaultIdempotencyPolicy(), requireKey: true };
-const store = new MemoryIdempotencyStore();
-
-async function submitAgentRaw(key: string, signedRawHex: string) {
-  const result = await evaluateIdempotency(policy, store, {
-    key,
-    payload: signedRawHex, // exact signed raw bytes (fingerprint SoT)
-  });
-
-  if (!shouldForward(result)) {
-    // replay_same → do NOT call eth_sendRawTransaction again
-    // deny → conflict / in_flight / store_down / key_required
-    return result;
-  }
-
-  // decision === proceed_first only — safe to submit once
-  await eth_sendRawTransaction(signedRawHex);
-  await completeIdempotency(store, key, { terminal: "allow" });
-  return result;
-}
-```
-
-## Deny codes (P0)
-
-| Code | Meaning |
-| --- | --- |
-| `idempotency_conflict` | same key, different payload hash |
-| `idempotency_store_down` | store unavailable (fail-closed; degrade is opt-in only) |
-| `idempotency_key_required` | key missing when required, or key longer than 255 UTF-8 bytes |
-| `idempotency_in_flight` | same key already claimed; do not submit again |
-
-## Keys
-
-Opaque, non-secret client strings (prefer UUIDv4 / high-entropy random). Do not put private keys, seed phrases, passwords, or raw signed transactions into the key string. Max 255 UTF-8 bytes.
-
-## Store
-
-P0 ships `MemoryIdempotencyStore` plus `IdempotencyStore`. No Redis/SQL adapters, no TTL prune, no fleet sync in this package.
+What you used here is now the `Idempotency-Key` header on the proxy, `sendRawTransaction({ raw, idempotencyKey })` in `l2-send-guard/sdk`, or `guard.check(raw, { chainId, idempotencyKey })` in the library. A conflict is `-32087`, as before.
+The full guide is at https://github.com/yellowgram/l2-safety-proxy#migrating.
 
 ## License
 
-MIT — [LICENSE](./LICENSE).
-
----
-
-Part of yellowgram open source tools: https://www.yellowgram.dev/oss
+MIT

@@ -111,7 +111,7 @@ describe("evaluateIdempotency", () => {
     expect(defaultIdempotencyPolicy().degradeOnStoreDown).toBe(false);
   });
 
-  // DC13 (1): normalized 0xABC vs abc same hash → replay not conflict
+  //  (1): normalized 0xABC vs abc same hash → replay not conflict
   it("normalized 0xABC vs abc same hash → replay not conflict", async () => {
     const store = new MemoryIdempotencyStore();
     const p = defaultIdempotencyPolicy();
@@ -129,7 +129,7 @@ describe("evaluateIdempotency", () => {
     expect(shouldForward(r)).toBe(false);
   });
 
-  // DC13 (2): concurrent two first-sees → exactly one proceed_first
+  //  (2): concurrent two first-sees → exactly one proceed_first
   it("concurrent two first-sees same key+payload → one proceed_first, other in_flight", async () => {
     const store = new MemoryIdempotencyStore();
     const p = defaultIdempotencyPolicy();
@@ -148,7 +148,7 @@ describe("evaluateIdempotency", () => {
     expect(shouldForward(inflight[0]!)).toBe(false);
   });
 
-  // DC13 (3): concurrent same key different payload → conflict for mismatch
+  //  (3): concurrent same key different payload → conflict for mismatch
   it("concurrent same key different payload → conflict for mismatching caller", async () => {
     const store = new MemoryIdempotencyStore();
     const p = defaultIdempotencyPolicy();
@@ -167,7 +167,7 @@ describe("evaluateIdempotency", () => {
     expect(shouldForward(mismatch)).toBe(false);
   });
 
-  // DC13 (4): shouldForward(replay_same) === false
+  //  (4): shouldForward(replay_same) === false
   it("shouldForward(replay_same) === false", async () => {
     const store = new MemoryIdempotencyStore();
     const p = defaultIdempotencyPolicy();
@@ -187,7 +187,7 @@ describe("evaluateIdempotency", () => {
     expect(upstreamCalls).toBe(0);
   });
 
-  // DC13 (5): store get throw → idempotency_store_down
+  //  (5): store get throw → idempotency_store_down
   it("store get throw → idempotency_store_down", async () => {
     const base = new MemoryIdempotencyStore();
     const throwingGet: IdempotencyStore = {
@@ -207,7 +207,7 @@ describe("evaluateIdempotency", () => {
     expect(r.code).toBe("idempotency_store_down");
   });
 
-  // DC13 (6): completed deny replay same hash does not forward
+  //  (6): completed deny replay same hash does not forward
   it("completed deny replay same hash does not forward", async () => {
     const store = new MemoryIdempotencyStore();
     const p = defaultIdempotencyPolicy();
@@ -226,7 +226,7 @@ describe("evaluateIdempotency", () => {
     expect(shouldForward(r)).toBe(false);
   });
 
-  // DC13 (7): key length >255 → deny
+  //  (7): key length >255 → deny
   it("key length >255 UTF-8 bytes → deny idempotency_key_required", async () => {
     const store = new MemoryIdempotencyStore();
     const longKey = "k".repeat(MAX_KEY_UTF8_BYTES + 1);

@@ -8,5 +8,5 @@ no keys · no capital · no public RPC · NOT nonce-lease
 5 key required missing → allow=false code=idempotency_key_required
 6 in-flight retry → allow=false code=idempotency_in_flight (first was proceed_first)
 
-charter: no Soft* · no Polar · no custody · LaunchGate-before-expansion
+deprecated: use l2-send-guard 1.x · this package holds no keys
 honesty: replay_same means do not call eth_sendRawTransaction again. Checking allow alone is not enough.

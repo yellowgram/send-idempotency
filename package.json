@@ -1,7 +1,7 @@
 {
   "name": "send-idempotency",
-  "version": "0.1.0",
-  "description": "Non-custodial at-send idempotency: client key \u2192 remember hash/deny; conflict if payload differs; fail-closed on store-down. NOT nonce-lease.",
+  "version": "0.2.0",
+  "description": "Deprecated: merged into l2-send-guard 1.x. This package still works but gets no fixes. See https://github.com/yellowgram/l2-safety-proxy#migrating",
   "type": "module",
   "main": "./dist/api.js",
   "types": "./dist/api.d.ts",
@@ -17,7 +17,6 @@
     "docs/DEMO.md",
     "SECURITY.md",
     "CHANGELOG.md",
-    "CHARTER.md",
     "LICENSE",
     "README.md"
   ],
@@ -35,7 +34,8 @@
     "idempotency",
     "middleware",
     "agent",
-    "fail-closed"
+    "fail-closed",
+    "deprecated"
   ],
   "license": "MIT",
   "author": {

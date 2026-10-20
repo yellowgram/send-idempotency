@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 
 /**
- * Normalize signed raw hex for fingerprinting (DC1):
+ * Normalize signed raw hex for fingerprinting:
  * strip whitespace, optional 0x, lowercase. Does not hash a partial field bag.
  */
 export function normalizeSignedRawHex(payload: string): string {
@@ -10,7 +10,7 @@ export function normalizeSignedRawHex(payload: string): string {
   return s;
 }
 
-/** Stable payload hash = sha256 of normalized signed-raw hex (DC1). */
+/** Stable payload hash = sha256 of normalized signed-raw hex. */
 export function hashPayload(payload: string): string {
   const normalized = normalizeSignedRawHex(payload);
   return createHash("sha256").update(normalized, "utf8").digest("hex");

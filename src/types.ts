@@ -9,7 +9,7 @@ export type IdempotencyDecision =
   | "replay_same"
   | "deny";
 
-/** P0 record lifecycle: in_flight → completed (terminal allow or deny). */
+/** record lifecycle: in_flight → completed (terminal allow or deny). */
 export type IdempotencyRecordStatus = "in_flight" | "completed";
 
 export interface IdempotencyRecord {
@@ -45,7 +45,7 @@ export function defaultIdempotencyPolicy(): IdempotencyPolicy {
 }
 
 /**
- * Compose / middleware helper (DC4 shape B, DC7).
+ * Compose / middleware helper ( shape B, ).
  * True only for `proceed_first` (including optional-key pass-through).
  * `replay_same` and all denies must not call eth_sendRawTransaction again.
  */
