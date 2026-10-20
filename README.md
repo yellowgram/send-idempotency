@@ -14,7 +14,8 @@ send-idempotency did one slice of a bigger job (idempotency keys for sends). On 
 
 `l2-send-guard` 1.x checks every call inside a transaction against one policy file, gates EIP-7702
 delegations, keeps rolling caps and idempotency keys in a persistent store, watches what arrives, and
-ships a guarded signer that makes the policy binding for whoever holds the key.
+ships a guarded signer that applies the policy to the transactions, typed data and 7702 authorizations it
+signs, and refuses plain messages unless you allow them.
 
 ## Migrating
 

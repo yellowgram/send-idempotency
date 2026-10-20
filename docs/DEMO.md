@@ -11,7 +11,7 @@ npm run demo:offline
 
 `demo:offline` exits non-zero if stdout drifts from [`fixtures/offline.expected.txt`](./fixtures/offline.expected.txt).
 
-What it shows (sealed allow **and** deny/conflict):
+What it shows (fixed fixtures: allow **and** deny/conflict):
 
 1. First key → `allow=true` `decision=proceed_first` `shouldForward=true`
 2. Retry same payload → `allow=true` `decision=replay_same` `shouldForward=false`
